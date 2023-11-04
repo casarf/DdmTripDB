@@ -1,4 +1,4 @@
-# Database Interaction and Data Manipulation
+# TripAdvisor & MongoDB
 
 This repository contains essential scripts for interacting with a database and performing Create, Read, Update, and Delete (CRUD) operations. Each script in the `data_manipulation` directory is an example implementation of one of the CRUD operations.
 
