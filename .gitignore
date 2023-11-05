@@ -123,3 +123,7 @@ cython_debug/
 
 # Custom directories you want to ignore
 example_name_dir/
+
+db/
+
+raw_data/
