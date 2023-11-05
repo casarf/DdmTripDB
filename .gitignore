@@ -127,3 +127,6 @@ example_name_dir/
 db/
 
 raw_data/
+
+tripadvisor_european_restaurants.csv
+tripadvisor_european_restaurants.json

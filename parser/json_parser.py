@@ -136,7 +136,7 @@ def csv_to_json(csv_file_path, json_file_path):
     with open(json_file_path, 'w', encoding='utf-8') as json_file:
         json.dump(json_list, json_file, indent=4, ensure_ascii=False)
 
-csv_file_path = 'raw_data/tripadvisor_european_restaurants.csv'
+csv_file_path = 'tripadvisor_european_restaurants.csv'
 json_file_path = 'tripadvisor_european_restaurants.json'
 print('Parsing...')
 csv_to_json(csv_file_path, json_file_path)
