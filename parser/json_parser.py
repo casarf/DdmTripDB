@@ -36,22 +36,22 @@ def csv_to_json(csv_file_path, json_file_path):
             row['gluten_free'] = row['gluten_free'] == 'Y'
 
             # Convert ratings to float or default to 0.0 if empty
-            avg_rating = row.get('', '0.0').strip()
-            total_reviews_count = row.get('', '0.0').strip()
-            reviews_count_in_default_language = row.get('', '0.0').strip()
-            excellent = row.get('', '0.0').strip()
-            very_good = row.get('', '0.0').strip()
-            average = row.get('', '0.0').strip()
-            poor = row.get('', '0.0').strip()
-            terrible = row.get('', '0.0').strip()
-            food = row.get('', '0.0').strip()
-            service = row.get('', '0.0').strip()
-            value = row.get('', '0.0').strip()
-            atmosphere = row.get('', '0.0').strip()
+            avg_rating = row.get('avg_rating', '0.0').strip()
+            total_reviews_count = row.get('total_reviews_count', '0.0').strip()
+            reviews_count_in_default_language = row.get('reviews_count_in_default_language', '0.0').strip()
+            excellent = row.get('excellent', '0.0').strip()
+            very_good = row.get('very_good', '0.0').strip()
+            average = row.get('average', '0.0').strip()
+            poor = row.get('poor', '0.0').strip()
+            terrible = row.get('terrible', '0.0').strip()
+            food = row.get('food', '0.0').strip()
+            service = row.get('service', '0.0').strip()
+            value = row.get('value', '0.0').strip()
+            atmosphere = row.get('atmosphere', '0.0').strip()
             
-            open_days_per_week = row.get('', '0.0').strip()
-            open_hours_per_week = row.get('', '0.0').strip()
-            working_shifts_per_week = row.get('', '0.0').strip()
+            open_days_per_week = row.get('open_days_per_week', '0.0').strip()
+            open_hours_per_week = row.get('open_hours_per_week', '0.0').strip()
+            working_shifts_per_week = row.get('working_shifts_per_week', '0.0').strip()
 
             avg_rating = float(avg_rating) if avg_rating else ""
             total_reviews_count = float(total_reviews_count) if total_reviews_count else ""
@@ -138,5 +138,6 @@ def csv_to_json(csv_file_path, json_file_path):
 
 csv_file_path = 'tripadvisor_european_restaurants.csv'
 json_file_path = 'tripadvisor_european_restaurants.json'
+print('Parsing...')
 csv_to_json(csv_file_path, json_file_path)
 print('Done!')
