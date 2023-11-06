@@ -1,6 +1,15 @@
 import csv
 import json
 
+# Function to convert price level symbols to numbers
+def price_levels(price_level):
+    if price_level:
+        # Split the range and count the dollar signs in each part
+        parts = price_level.split('-')
+        return [str(len(part)) for part in parts]
+    else:
+        return []
+
 def csv_to_json(csv_file_path, json_file_path):
     json_list = []
 
@@ -24,7 +33,7 @@ def csv_to_json(csv_file_path, json_file_path):
             longitude = float(longitude) if longitude else 0.0
 
             # Process price levels and ranges
-            row['price_level'] = row['price_level'].split('-') if row['price_level'] else []
+            row['price_level'] = price_levels(row['price_level'])
             row['price_range'] = row['price_range'].split('-') if row['price_range'] else []
 
             # Convert 'claimed' status to boolean
