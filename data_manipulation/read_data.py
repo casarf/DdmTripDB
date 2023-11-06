@@ -19,7 +19,6 @@ def find_restaurant_by_link(restaurant_link):
     restaurant = collection.find_one({'restaurant_link': restaurant_link}, {'rating': 1})
     return restaurant
 
-
 # Query 2 - Top Five Vegan Restaurants in Milan
 def top_vegan_restaurant_in(city):
     
@@ -86,10 +85,6 @@ def currently_open_restaurants_in(city):
     for index, el in enumerate(open_restaurants, start=1):
         print(f"Restaurant #{index}: {el['_id']} {el['restaurant_name']}")
         
-    
-        
-        
-    
 # helper function for query #4
 def is_current_time_in_range(range):
     #'09:00-15:00'
@@ -104,10 +99,28 @@ def is_current_time_in_range(range):
     end = datetime.time(int(end_time[0]),int(end_time[0]))
     current = datetime.time(int(current_time[0]),int(current_time[0]))
     # current = datetime.time(3,0,0)
-  
+    
     return start  <= current <= end
     
+#Query 6 - Top Five Resturant respecting a budget in Milan
+def resturant_respecting_the_budget(city, budget):
+    client = create_connection()
+    db = client['TripAdvisor']
+    collection = db['EuropeanRestaurants']
     
+    restaurants = collection.find(
+    {
+        'location.city': city,
+        'food_specification.vegetarian_friendly': True,
+        
+    }).sort(
+    {
+        'rating.avg_rating': -1
+    }).limit(5)
+    
+    print('Done')
+    for index, el in enumerate(restaurants, start=1):
+        print(f"Restaurant #{index}: {el['_id']} {el['restaurant_name']}")
 
         
     
@@ -123,6 +136,12 @@ if __name__ == "__main__":
     # top_vegan_restaurant_in(city)
     
     # Query 4 run sample
+    # city = 'Milan'
+    # currently_open_restaurants_in(city)
+    
+    # Query 6 run sample
     city = 'Milan'
-    currently_open_restaurants_in(city)
+    budget = 30
+    resturant_respecting_the_budget(city,budget)
+    
     
