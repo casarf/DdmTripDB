@@ -123,3 +123,7 @@ cython_debug/
 
 # Custom directories you want to ignore
 example_name_dir/
+
+#Input file
+tripadvisor_european_restaurants.csv
+tripadvisor_european_restaurants.json
