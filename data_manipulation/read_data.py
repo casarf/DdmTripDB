@@ -112,7 +112,7 @@ def resturant_respecting_the_budget(city, budget):
     {
         'location.city': city,
         'food_specification.vegetarian_friendly': True,
-        
+        'price_range.0': {'$lte':budget}
     }).sort(
     {
         'rating.avg_rating': -1
