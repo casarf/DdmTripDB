@@ -1,6 +1,6 @@
 from data_manipulation.read_data import find_restaurant_by_link, db_find_one
 from data_manipulation.create_data import insert_data
-from db_connection.mongo_connect import create_connection
+from db_connection.mongo_connect import create_connection, close_connection
 from bson.decimal128 import Decimal128
 from bson import ObjectId
 import datetime
@@ -12,6 +12,8 @@ def db_update_one(query, new_values):
 
     update_result = collection.update_one(query, {'$set': new_values})
     print(f'Updated {update_result.modified_count} documents.')
+    
+    close_connection(client)
 
 def db_update_many(query, new_values):
     client = create_connection()
@@ -20,6 +22,8 @@ def db_update_many(query, new_values):
 
     update_result = collection.update_many(query, {'$set': new_values})
     print(f'Updated {update_result.modified_count} documents.')
+    
+    close_connection(client)
 
 def update_open_hours_multiple_days(restaurant_link, days, time_ranges):
     """
