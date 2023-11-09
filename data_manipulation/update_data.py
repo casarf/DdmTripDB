@@ -67,6 +67,9 @@ def update_ratings(restaurant_link, rating_update):
         return 'Restaurant not found or has no ratings yet.'
 
 
+def todo():
+    # {"availability.meals": { '$exists': true},"availability.meals": [], 'availability.original_open_hours': {$ne: []}}
+    return 0
 # Example usage: update_ratings
 # if __name__ == "__main__":
 #     # Example to increment the 'excellent' rating

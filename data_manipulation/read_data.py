@@ -103,7 +103,7 @@ def is_current_time_in_range(range):
     return start  <= current <= end
     
 #Query 6 - Top Five Resturant respecting a budget in Milan
-def resturant_respecting_the_budget(city, budget):
+def top_resturant_respecting_the_budget(city, budget):
     client = create_connection()
     db = client['TripAdvisor']
     collection = db['EuropeanRestaurants']
@@ -122,8 +122,44 @@ def resturant_respecting_the_budget(city, budget):
     for index, el in enumerate(restaurants, start=1):
         print(f"Restaurant #{index}: {el['_id']} {el['restaurant_name']}")
 
-        
+
+# Query 8 - Best Pizza in Rome!
+def find_by_tags_and_rating_in(city, tags):
+    client = create_connection()
+    db = client['TripAdvisor']
+    collection = db['EuropeanRestaurants']
+
+    restaurants = collection.find(
+    {
+        'location.city': city,
+        'top_tags': {'$in': tags},
+        'rating.food': { '$gte': 4.5 },
+        'rating.avg_rating': { '$gte': 4.5 }
+    }).sort(
+    {
+        'rating.avg_rating': -1
+    }).limit(5)
     
+    for index, el in enumerate(restaurants, start=1):
+        print(f"Restaurant #{index}: {el['_id']} {el['restaurant_name']}")
+        
+# Query 10 - Breakfast in Paris with Free Wifi!
+def find_meal_type_and_features_in(city, meal_type, features):
+    client = create_connection()
+    db = client['TripAdvisor']
+    collection = db['EuropeanRestaurants']
+    
+    restaurants = collection.find(
+    {
+        'location.city': city,
+        'availability.meals': {'$in': meal_type},
+        'availability.features': {'$in': features},
+    }).sort(
+    {
+        'rating.avg_rating': -1
+    }).limit(5)
+    for index, el in enumerate(restaurants, start=1):
+        print(f"Restaurant #{index}: {el['_id']} {el['restaurant_name']}")
 
 
 # Example usage
@@ -140,8 +176,19 @@ if __name__ == "__main__":
     # currently_open_restaurants_in(city)
     
     # Query 6 run sample
-    city = 'Milan'
-    budget = 30
-    resturant_respecting_the_budget(city,budget)
+    # city = 'Milan'
+    # budget = 30
+    # top_resturant_respecting_the_budget(city,budget)
     
+    # Query 8 run sample
+    # city = 'Rome'
+    # tags = ['Pizza']
+    # find_by_tags_and_rating_in(city, tags)
+    
+    # Query 10 run sample
+    
+    city = 'Paris'
+    features = ['Free Wifi']
+    meal_type = ['Breakfast']
+    find_meal_type_and_features_in(city,meal_type,features)
     
