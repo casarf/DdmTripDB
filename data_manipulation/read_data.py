@@ -93,7 +93,7 @@ def is_current_time_in_range(range):
     end_time = end_time.split(':')
     
     now = datetime.datetime.now()
-    current_time = current_time = now.strftime("%H:%M").split(":")
+    current_time =  now.strftime("%H:%M").split(":")
 
     start = datetime.time(int(start_time[0]),int(start_time[0]))
     end = datetime.time(int(end_time[0]),int(end_time[0]))
@@ -172,8 +172,8 @@ if __name__ == "__main__":
     # top_vegan_restaurant_in(city)
     
     # Query 4 run sample
-    # city = 'Milan'
-    # currently_open_restaurants_in(city)
+    city = 'Milan'
+    currently_open_restaurants_in(city)
     
     # Query 6 run sample
     # city = 'Milan'
@@ -187,8 +187,8 @@ if __name__ == "__main__":
     
     # Query 10 run sample
     
-    city = 'Paris'
-    features = ['Free Wifi']
-    meal_type = ['Breakfast']
-    find_meal_type_and_features_in(city,meal_type,features)
+    # city = 'Paris'
+    # features = ['Free Wifi']
+    # meal_type = ['Breakfast']
+    # find_meal_type_and_features_in(city,meal_type,features)
     
