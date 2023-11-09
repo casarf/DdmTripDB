@@ -1,4 +1,4 @@
-from data_manipulation.read_data import find_restaurant_by_link
+from data_manipulation.read_data import find_restaurant_by_link, db_find_one
 from data_manipulation.create_data import insert_data
 from db_connection.mongo_connect import create_connection
 from bson.decimal128 import Decimal128
@@ -81,17 +81,16 @@ def update_ratings(restaurant_link, rating_update):
 
 # Command #3 - Update Availability.Meals based on opening\_hours
 def update_meals_based_on_opening_hours():
-    client = create_connection()
-    db = client['TripAdvisor']
-    collection = db['EuropeanRestaurants']
     
-    restaurant = collection.find_one(
-    {
+    query = {
      'location.city': "Milan",
      'availability.meals': {'$exists': True},
      'availability.meals': [],
      'availability.original_open_hours': {'$ne': ''}
-    })
+    }
+    
+    restaurant = db_find_one(query)
+    print(restaurant)
     
     meals = generate_meals(restaurant['availability']['original_open_hours'])
     
@@ -103,7 +102,6 @@ def update_meals_based_on_opening_hours():
     print(query)
     db_update_one(query, new_values)
     
-    # return 0
 
 # Helper function for command 3
 def generate_meals(open_hours):
@@ -156,8 +154,8 @@ def is_moment_time_in_range(moment, time_range):
     return start  <= current <= end
 
 # Example usage: update_meals_based_on_opening_hours
-# if __name__ == "__main__":
-#     update_meals_based_on_opening_hours()
+if __name__ == "__main__":
+    update_meals_based_on_opening_hours()
 
 
 # Command #3 - Create a new restaurant and claim it
