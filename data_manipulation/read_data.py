@@ -1,6 +1,7 @@
 from db_connection.mongo_connect import create_connection
 import datetime
 
+
 def find_and_print_data(query):
     client = create_connection()
     db = client['TripAdvisor']

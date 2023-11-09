@@ -1,4 +1,5 @@
 from data_manipulation.read_data import find_restaurant_by_link
+from data_manipulation.create_data import insert_data
 from db_connection.mongo_connect import create_connection
 from bson.decimal128 import Decimal128
 from bson import ObjectId
@@ -77,6 +78,8 @@ def update_ratings(restaurant_link, rating_update):
 #     # Example to increment the 'excellent' rating
 #     update_ratings('g1005749-d14139205', 'excellent')
 
+
+# Command #3 - Update Availability.Meals based on opening\_hours
 def update_meals_based_on_opening_hours():
     client = create_connection()
     db = client['TripAdvisor']
@@ -102,6 +105,7 @@ def update_meals_based_on_opening_hours():
     
     # return 0
 
+# Helper function for command 3
 def generate_meals(open_hours):
     print(open_hours)
     
@@ -133,6 +137,7 @@ def generate_meals(open_hours):
     
     return meals
 
+# Helper function for command 3
 def is_moment_time_in_range(moment, time_range):
     #'09:00-15:00'
     start_time, end_time = time_range.split("-")
@@ -151,10 +156,89 @@ def is_moment_time_in_range(moment, time_range):
     return start  <= current <= end
 
 # Example usage: update_meals_based_on_opening_hours
+# if __name__ == "__main__":
+#     update_meals_based_on_opening_hours()
+
+
+# Command #3 - Create a new restaurant and claim it
+
+def create_and_claim(new_restaurant):
+    restaurant_id = insert_data(new_restaurant)
+    
+    client = create_connection()
+    db = client['TripAdvisor']
+    collection = db['EuropeanRestaurants']
+    
+    query = {'_id': ObjectId(restaurant_id)}
+    new_values = {'claimed' : True}
+    db_update_one(query,new_values)
+    
+# Example usage: create_and_claim
 if __name__ == "__main__":
-    update_meals_based_on_opening_hours()
-
-
+    new_restaurant = {
+        '_id': ObjectId(),  # Generating a new ObjectId
+        'restaurant_link': 'g11111-d11234567',
+        'restaurant_name': 'Pizzeria USI',
+        'location': {
+            'country': 'Switzerland',
+            'region': 'Ticino',
+            'province': 'Lugano',
+            'city': 'Lugano',
+            'address': 'Via la Santa 1, 6900 Lugano',
+            'latitude': 45.464664,
+            'longitude': 9.188540
+        },
+        'claimed': False,
+        'awards': [],
+        'popularity_detailed': '#1 of 50 Pizzerias in Lugano',
+        'popularity_generic': '#150 of 3000 places to eat in Lugano',
+        'top_tags': ['Family', 'Dessert', 'Italian','Pizza'],
+        'price_level': ['€€-€€€'],
+        'price_range': ['€15', '€30'],
+        'food_specification': {
+            'cuisines': ['Italian', 'Pizza'],
+            'special_diets': ['Vegetarian Friendly', 'Vegan Options'],
+            'vegetarian_friendly': True,
+            'vegan_options': True,
+            'gluten_free': True
+        },
+        'availability': {
+            'meals': ['Lunch', 'Dinner'],
+            'features': ['Reservations', 'Seating', 'Wheelchair Accessible'],
+            'original_open_hours': {
+                'Mon': ['11:00-20:00'],
+                'Tue': ['11:00-20:00'],
+                'Wed': ['11:00-20:00'],
+                'Thu': ['11:00-20:00'],
+                'Fri': ['11:00-22:00'],
+                'Sat': ['11:00-22:00'],
+                'Sun': ['11:00-18:00']
+            },
+            'open_days_per_week': 7,
+            'open_hours_per_week': 74,
+            'working_shifts_per_week': 14
+        },
+        'rating': {
+            'avg_rating': 4.5,
+            'total_reviews_count': 320,
+            'default_language': 'Italian',
+            'reviews_count_in_default_language': 280,
+            'excellent': 250,
+            'very_good': 50,
+            'average': 10,
+            'poor': 5,
+            'terrible': 5,
+            'food': 4.5,
+            'service': 4.5,
+            'value': 4.0,
+            'atmosphere': 4.0,
+            'keywords': ['cozy', 'family-friendly', 'traditional']
+        }
+    }
+    
+    create_and_claim(new_restaurant)
+    
+    
 
 
     

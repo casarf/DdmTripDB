@@ -9,6 +9,7 @@ def insert_data(data):
     # Insert a single document
     insertion_result = collection.insert_one(data)
     print(f'Inserted document with id: {insertion_result.inserted_id}')
+    return insertion_result.inserted_id
 
 # Example usage
 if __name__ == '__main__':
