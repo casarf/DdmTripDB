@@ -86,8 +86,8 @@ def find_restaurants_nearby(country, region, user_location, max_distance_km=10):
     # Return the filtered list of nearby restaurants with distance
     return nearby_restaurants
 
-# Query 2 - Top Five Vegan Restaurants in Milan
-def top_vegan_restaurant_in(city):
+# Query 2 - Top Five Vegetarian Restaurants in Milan
+def top_vegetarian_restaurant_in(city):
 
     query = {
         'location.city': city,
@@ -393,7 +393,7 @@ if __name__ == "__main__":
 
     # Query 2 run sample
     # city = 'Milan'
-    # top_vegan_restaurant_in(city)
+    # top_vegetarian_restaurant_in(city)
 
     # Query 3 run sample
     # result = compute_percentage_wheelchair_accessible_by_country()
