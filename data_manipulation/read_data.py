@@ -1,5 +1,7 @@
 from db_connection.mongo_connect import create_connection, close_connection
 import datetime
+from geopy.distance import geodesic
+from geopy.geocoders import Nominatim
 
 def db_find_one(query):
     client = create_connection()
@@ -47,7 +49,39 @@ def find_restaurant_by_link(restaurant_link):
     collection = db['EuropeanRestaurants']
 
     restaurant = collection.find_one({'restaurant_link': restaurant_link}, {'rating': 1})
+    
     return restaurant
+
+# Query 1 - Find restaurant by latitude and longitude
+def find_restaurants_nearby(country, region, user_location, max_distance_km=10):
+    
+    # MongoDB query to filter by country and region
+    query = {
+        'location.country': country,
+        'location.region': region
+    }
+
+    # Fetch restaurants in the specified country and region from the database (first filter)
+    filtered_restaurants = db_find_many(query)
+
+    # Filter restaurants based on distance
+    nearby_restaurants = []
+    for restaurant in filtered_restaurants:
+        # Extract the latitude and longitude of the restaurant
+        restaurant_location = (
+            restaurant['location']['latitude'],
+            restaurant['location']['longitude']
+        )
+
+        # Calculate the distance from the user's location
+        distance = geodesic(user_location, restaurant_location).kilometers
+
+        # Check if the restaurant is within the specified maximum distance
+        if distance <= max_distance_km:
+            nearby_restaurants.append((restaurant, distance))
+
+    # Return the filtered list of nearby restaurants with distance
+    return nearby_restaurants
 
 # Query 2 - Top Five Vegan Restaurants in Milan
 def top_vegan_restaurant_in(city):
@@ -188,6 +222,15 @@ if __name__ == "__main__":
     # query = {'restaurant_link': 'g187079-d1234567'} # 'La Bonne Fourchette'
     # find_and_print_data(query)
     
+    # Query 1 run sample
+      country = 'France'
+    # region_name = 'Pays de la Loire'
+    # user_location = (47.72043, -0.70911) # lat. & long.
+    # max_dist = 12 # km
+    # result = find_restaurants_nearby(country, region_name, user_location, max_dist)
+    # for rest in result:
+    #     print(rest[0]['restaurant_name'] + ': ' + str(round(rest[1],2)) + 'km')
+    
     # Query 2 run sample
     # city = 'Milan'
     # top_vegan_restaurant_in(city)
@@ -207,9 +250,8 @@ if __name__ == "__main__":
     # find_by_tags_and_rating_in(city, tags)
     
     # Query 10 run sample
-    
-    city = 'Paris'
-    features = ['Free Wifi']
-    meal_type = ['Breakfast']
-    find_meal_type_and_features_in(city,meal_type,features)
+    # city = 'Paris'
+    # features = ['Free Wifi']
+    # meal_type = ['Breakfast']
+    # find_meal_type_and_features_in(city,meal_type,features)
     
