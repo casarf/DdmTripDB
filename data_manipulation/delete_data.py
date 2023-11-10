@@ -1,6 +1,6 @@
 from db_connection.mongo_connect import create_connection, close_connection
 
-def delete_data(query):
+def db_delete_many(query):
     client = create_connection()
     db = client['TripAdvisor']
     collection = db['EuropeanRestaurants']
@@ -23,9 +23,9 @@ def db_delete_one(query):
 # Example usage
 # if __name__ == "__main__":
 #     query = {'restaurant_link': 'g187079-d1234567'} # 'La Bonne Fourchette'
-#     delete_data(query)
+#     db_delete_many(query)
 
-# Command # - Delete a failed restaurant
+# Command #5 - Delete a failed restaurant
 def delete_failed_restaurant():
     query = {
         "location.city" : 'Milan',
