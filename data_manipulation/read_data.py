@@ -19,20 +19,20 @@ def db_find_many(query, order='', value_limit=''):
     db = client['TripAdvisor']
     collection = db['EuropeanRestaurants']
 
-    document = []
-
+    documents = []
+    
     if (order != '') and (value_limit != ''):
-        document = list(collection.find(query).sort(order).limit(value_limit))
+        documents = list(collection.find(query).sort(order).limit(value_limit))
     elif value_limit != '':
-        document = list(collection.find(query).limit(value_limit))
+        documents = list(collection.find(query).limit(value_limit))
     elif order != '':
-        document = list(collection.find(query).sort(order))
+        documents = list(collection.find(query).sort(order))
     else:
-        document = list(collection.find(query))
-
+        documents = list(collection.find(query))
+    
     close_connection(client)
-
-    return document
+    
+    return documents
     
 def find_and_print_data(query):
     client = create_connection()

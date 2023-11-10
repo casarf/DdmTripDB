@@ -1,7 +1,7 @@
-from db_connection.mongo_connect import create_connection
+from db_connection.mongo_connect import create_connection, close_connection
 from bson import ObjectId
 
-def insert_data(data):
+def db_insert_data(data):
     client = create_connection()
     db = client['TripAdvisor']
     collection = db['EuropeanRestaurants']
@@ -9,6 +9,7 @@ def insert_data(data):
     # Insert a single document
     insertion_result = collection.insert_one(data)
     print(f'Inserted document with id: {insertion_result.inserted_id}')
+    close_connection(client)
     return insertion_result.inserted_id
 
 # Example usage
@@ -73,4 +74,4 @@ if __name__ == '__main__':
             'keywords': ['cozy', 'family-friendly', 'traditional']
         }
     }
-    insert_data(sample_data)
+    db_insert_data(sample_data)

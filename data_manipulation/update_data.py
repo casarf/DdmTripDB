@@ -1,5 +1,5 @@
 from data_manipulation.read_data import find_restaurant_by_link, db_find_one
-from data_manipulation.create_data import insert_data
+from data_manipulation.create_data import db_insert_data
 from db_connection.mongo_connect import create_connection, close_connection
 from decimal import Decimal
 from bson.decimal128 import Decimal128
@@ -114,7 +114,6 @@ def update_meals_based_on_opening_hours():
     query = {'_id': ObjectId(restaurant["_id"])}
     new_values = {'availability.meals' : meals}
     
-    # print(meals)
     print(new_values)
     print(query)
     db_update_one(query, new_values)
@@ -154,7 +153,6 @@ def generate_meals(open_hours):
 
 # Helper function for command 3
 def is_moment_time_in_range(moment, time_range):
-    #'09:00-15:00'
     start_time, end_time = time_range.split("-")
     start_time = start_time.split(':')
     end_time = end_time.split(':')
@@ -170,15 +168,11 @@ def is_moment_time_in_range(moment, time_range):
     
     return start  <= current <= end
 
-# Command #3 - Create a new restaurant and claim it
+# Command #4 - Create a new restaurant and claim it
 
 def create_and_claim(new_restaurant):
-    restaurant_id = insert_data(new_restaurant)
-    
-    client = create_connection()
-    db = client['TripAdvisor']
-    collection = db['EuropeanRestaurants']
-    
+    restaurant_id = db_insert_data(new_restaurant)
+        
     query = {'_id': ObjectId(restaurant_id)}
     new_values = {'claimed' : True}
     db_update_one(query,new_values)
@@ -246,7 +240,7 @@ if __name__ == "__main__":
         }
     }
     #update_meals_based_on_opening_hours()
-    #create_and_claim(new_restaurant)
+    create_and_claim(new_restaurant)
     #update_ratings('g11111-d11234567', "very_good")
     
 
