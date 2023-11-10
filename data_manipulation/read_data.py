@@ -55,7 +55,7 @@ def find_restaurant_by_link(restaurant_link):
 
     return restaurant
 
-# Query 1 - Find restaurant by latitude and longitude
+# Query 1 - Proximity-Based Restaurant Discovery 
 def find_restaurants_nearby(country, region, user_location, max_distance_km=10):
 
     # MongoDB query to filter by country and region
@@ -103,7 +103,7 @@ def top_vegan_restaurant_in(city):
     for index, el in enumerate(restaurants, start=1):
         print(f"Restaurant #{index}: {el['restaurant_name']}")
 
-# Query 3 - Accessibility in different countries
+# Query 3 - Accessibility Index of European Restaurants by Country
 def compute_percentage_wheelchair_accessible_by_country():
     client = create_connection()
     db = client['TripAdvisor']
@@ -205,7 +205,7 @@ def is_current_time_in_range(range):
 
     return start <= current <= end
 
-# Query 5 - Average rating of the certified restaurant
+# Query 5 - Certified Restaurant Quality Metrics
 def compute_average_rating_and_reviews_of_certified_restaurants():
     client = create_connection()
     db = client['TripAdvisor']
@@ -261,6 +261,40 @@ def top_resturant_respecting_the_budget(city, budget):
     for index, el in enumerate(restaurants, start=1):
         print(f"Restaurant #{index}: {el['_id']} {el['restaurant_name']}")
 
+#Query 7 - Italian Regional Dining Affordability Rank
+def compute_average_price_range_by_region_in_italy():
+    # Query to select Italian restaurants with a defined price range
+    query = {'location.country': 'Italy', 'price_range': {'$ne': []}}
+
+    # Fetching the data
+    italian_restaurants = db_find_many(query)
+
+    # Dictionary to hold total price range sum and count for each region
+    region_price_data = {}
+
+    for restaurant in italian_restaurants:
+        region = restaurant['location']['region']
+        price_range = restaurant['price_range']
+
+        if region not in region_price_data:
+            region_price_data[region] = {'total_price': 0, 'count': 0}
+
+        # Assuming price_range is a list [min_price, max_price]
+        if(price_range[1]<300):
+            average_price = sum(price_range) / len(price_range)
+            region_price_data[region]['total_price'] += average_price
+            region_price_data[region]['count'] += 1
+
+    # Calculating the average price range for each region
+    average_price_by_region = {}
+    for region, data in region_price_data.items():
+        average_price = data['total_price'] / data['count']
+        average_price_by_region[region] = average_price
+
+    # Sorting regions from the most expensive to the least
+    sorted_regions = sorted(average_price_by_region.items(), key=lambda x: x[1], reverse=True)
+
+    return sorted_regions
 
 # Query 8 - Best Pizza in Rome!
 def find_by_tags_and_rating_in(city, tags):
@@ -284,9 +318,44 @@ def find_by_tags_and_rating_in(city, tags):
     for index, el in enumerate(restaurants, start=1):
         print(f"Restaurant #{index}: {el['_id']} {el['restaurant_name']}")
 
+#Query 9 - Cuisine Popularity Analysis by Country
+def count_restaurants_by_cuisine_in_country(country):
+    client = create_connection()
+    db = client['TripAdvisor']
+    collection = db['EuropeanRestaurants']
+    
+    # Aggregation pipeline for MongoDB query
+    pipeline = [
+        {
+            "$match": {"location.country": country}
+        },
+        {
+            "$unwind": "$food_specification.cuisines"
+        },
+        {
+            "$group": {
+                "_id": "$food_specification.cuisines",
+                "count": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"count": -1}
+        }
+    ]
+
+    # Execute the aggregation query
+    result = collection.aggregate(pipeline)
+
+    # Formatting the results
+    cuisine_counts = {}
+    for item in result:
+        cuisine = item["_id"]
+        count = item["count"]
+        cuisine_counts[cuisine] = count
+
+    return cuisine_counts
+
 # Query 10 - Breakfast in Paris with Free Wifi!
-
-
 def find_meal_type_and_features_in(city, meal_type, features):
 
     query = {
@@ -335,17 +404,28 @@ if __name__ == "__main__":
     # currently_open_restaurants_in(city)
     
     # Query 5 certified restaurant metric
-    print(compute_average_rating_and_reviews_of_certified_restaurants())
+    # print(compute_average_rating_and_reviews_of_certified_restaurants())
 
     # Query 6 run sample
     # city = 'Milan'
     # budget = 30
     # top_resturant_respecting_the_budget(city,budget)
+    
+    # QUery 7 run sample
+    # result = compute_average_price_range_by_region_in_italy()
+    # for region, avg_price in result:
+    #     print(f"{region}: Average Price Range {round(avg_price, 2)}")
 
     # Query 8 run sample
     # city = 'Rome'
     # tags = ['Pizza']
     # find_by_tags_and_rating_in(city, tags)
+    
+    # Query 9 run sample
+    country = "Spain"
+    cuisine_counts = count_restaurants_by_cuisine_in_country(country)
+    for cuisine, count in cuisine_counts.items():
+        print(f"{cuisine}: {count} restaurants")
 
     # Query 10 run sample
     # city = 'Paris'
