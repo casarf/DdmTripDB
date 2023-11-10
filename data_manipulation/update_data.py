@@ -1,17 +1,18 @@
 from data_manipulation.read_data import find_restaurant_by_link, db_find_one
 from data_manipulation.create_data import insert_data
 from db_connection.mongo_connect import create_connection, close_connection
+from decimal import Decimal
 from bson.decimal128 import Decimal128
 from bson import ObjectId
 import datetime
 
-def db_update_one(query, new_values):
+def db_update_one(query, new_value):
     client = create_connection()
     db = client['TripAdvisor']
     collection = db['EuropeanRestaurants']
 
-    update_result = collection.update_one(query, {'$set': new_values})
-    print(f'Updated {update_result.modified_count} documents.')
+    update_result = collection.update_one(query, {'$set': new_value})
+    print(f'Update {update_result.modified_count} document. (New value: {new_value})')
     
     close_connection(client)
 
@@ -21,7 +22,7 @@ def db_update_many(query, new_values):
     collection = db['EuropeanRestaurants']
 
     update_result = collection.update_many(query, {'$set': new_values})
-    print(f'Updated {update_result.modified_count} documents.')
+    print(f'Update {update_result.modified_count} documents. (New values: {new_values})')
     
     close_connection(client)
 
@@ -55,26 +56,38 @@ def update_ratings(restaurant_link, rating_update):
     if restaurant and 'rating' in restaurant:
         current_ratings = restaurant['rating']
 
-        # Calculate the new total reviews count and update the specific rating.
-        total_reviews_count = current_ratings.get('total_reviews_count', Decimal128('0')).to_decimal() + 1
-        current_ratings[rating_update] = current_ratings.get(rating_update, Decimal128('0')).to_decimal() + 1
+        # Function to safely convert to Decimal
+        def to_decimal(value):
+            if isinstance(value, Decimal128):
+                return value.to_decimal()
+            else:
+                return Decimal(value)
 
-        # Recalculate the average rating.
+        # Safely convert and update values
+        total_reviews_count = to_decimal(current_ratings['total_reviews_count']) + 1
+        current_ratings[rating_update] = to_decimal(current_ratings[rating_update]) + 1
+
+        # Recalculate the average rating
         ratings_weight = {'excellent': 5, 'very_good': 4, 'average': 3, 'poor': 2, 'terrible': 1}
-        total_rating_score = sum(ratings_weight[key] * current_ratings.get(key, Decimal128('0')).to_decimal() for key in ratings_weight)
+        total_rating_score = sum(ratings_weight[key] * to_decimal(current_ratings.get(key, 0)) for key in ratings_weight)
         avg_rating = total_rating_score / total_reviews_count
 
-        # Prepare the new values for updating the document.
+        # Convert Decimal back to Decimal128 for MongoDB
+        total_reviews_count_db = Decimal128(str(total_reviews_count))
+        avg_rating_db = Decimal128(str(avg_rating))
+        rating_update_db = Decimal128(str(current_ratings[rating_update]))
+
+        # Prepare the new values for updating the document
         new_values = {
-            'rating.total_reviews_count': Decimal128(str(total_reviews_count)),
-            'rating.avg_rating': Decimal128(str(avg_rating)),
-            f'rating.{rating_update}': Decimal128(str(current_ratings[rating_update]))
+            'rating.total_reviews_count': total_reviews_count_db,
+            'rating.avg_rating': avg_rating_db,
+            f'rating.{rating_update}': rating_update_db
         }
 
         db_update_one({'restaurant_link': restaurant_link}, new_values)
 
     else:
-        # Handle the case where the restaurant is not found or has no ratings.
+        # Handle the case where the restaurant is not found or has no ratings
         return 'Restaurant not found or has no ratings yet.'
 
 # Example usage: update_ratings
@@ -157,11 +170,6 @@ def is_moment_time_in_range(moment, time_range):
     
     return start  <= current <= end
 
-# Example usage: update_meals_based_on_opening_hours
-if __name__ == "__main__":
-    update_meals_based_on_opening_hours()
-
-
 # Command #3 - Create a new restaurant and claim it
 
 def create_and_claim(new_restaurant):
@@ -237,9 +245,9 @@ if __name__ == "__main__":
             'keywords': ['cozy', 'family-friendly', 'traditional']
         }
     }
-    
-    create_and_claim(new_restaurant)
-    
+    #update_meals_based_on_opening_hours()
+    #create_and_claim(new_restaurant)
+    #update_ratings('g11111-d11234567', "very_good")
     
 
 
