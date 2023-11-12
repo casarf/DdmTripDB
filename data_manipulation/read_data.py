@@ -203,7 +203,10 @@ def is_current_time_in_range(range):
     end = datetime.time(int(end_time[0]), int(end_time[0]))
     current = datetime.time(int(current_time[0]), int(current_time[0]))
 
-    return start <= current <= end
+    if end < start:
+        return start <= current
+    
+    return start  <= current <= end
 
 # Query 5 - Certified Restaurant Quality Metrics
 def compute_average_rating_and_reviews_of_certified_restaurants():
