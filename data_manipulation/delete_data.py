@@ -28,10 +28,10 @@ def db_delete_one(query):
 #     db_delete_many(query)
 
 # Command #5 - Delete a duplicated restaurant
-def delete_duplicated_restaurant():
+def delete_duplicated_restaurant_in(city):
     
     query = {
-        "location.city" : 'Milan',
+        "location.city" : city,
     }
     
     restaurants = db_find_many(query)
@@ -63,4 +63,5 @@ def delete_duplicated_restaurant():
 
 # Example usage
 if __name__ == "__main__":
-    delete_duplicated_restaurant()
+    city = "Milan"
+    delete_duplicated_restaurant_in(city)
